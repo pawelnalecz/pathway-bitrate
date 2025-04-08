@@ -1,0 +1,58 @@
+# Snakemake
+.snakemake
+
+# Data files
+*.csv
+*.npz
+*.pickle
+*.pkl
+*.gz
+
+# Figures are also not allowed by default
+*.jpeg
+*.jpg
+*.pdf
+*.png
+*.svg
+
+# Notebooks
+*.nb
+*.ipynb
+
+# File management scripts
+scripts
+
+# Local configuration
+# **/local_config.py
+
+# Local scratch
+private/
+batch_quantification/
+image_quantification/
+tmp/
+
+# Editors
+.vscode/
+.idea/
+
+# Type checking
+.pytype/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Code dump file
+core
