@@ -3,7 +3,6 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 
-from src.timer import Timer
 from config import parameters
 from src.stat_utils import normalize_with_mean_and_std
 from src.internal_abbreviations import has_exactly_inhibitors
@@ -21,8 +20,6 @@ def preprocess_tracks(
     background_clip=0.03,
     #smoothing_wins=range(1, 10),
 ):
-    timer = Timer()
-    timer.start()
 
     receptor_channel  = experiment_info['receptor_channel']
     reporter_channel  = experiment_info['reporter_channel']
@@ -33,7 +30,6 @@ def preprocess_tracks(
     
     if remove_short_tracks: 
         tracks = _remove_short_tracks(tracks, valid_pulses)
-        timer.log('Removing short tracks')
 
     tracks[f'img_{receptor_channel}_background'] = tracks[f'img_{receptor_channel}_background'].replace(0, np.nan)
     tracks[f'nuc_{receptor_channel}_intensity_mean'] = tracks[f'nuc_{receptor_channel}_intensity_mean'].replace(0, np.nan)
@@ -90,8 +86,6 @@ def preprocess_tracks(
         'valid',
     ]]
 
-    timer.log()
-    timer.report()
     return tracks
 
 
@@ -322,13 +316,10 @@ def _remove_short_tracks(data, valid_pulses, thr_in_min=parameters.TRACK_LENGTH_
     """Removes tracks whose overlap with the interval between the first and the last valid pulse is shorter than thr_in_min."""
     earliest_track_end = valid_pulses[0] + thr_in_min * 60
     latest_track_start = valid_pulses[-1] - thr_in_min * 60
-    timer = Timer(prefix='sh  ')
-    timer.start()
     track_lens = data.groupby('track_id').size()
     track_start = data.reset_index('time_in_seconds').groupby('track_id')['time_in_seconds'].min()
     track_end = data.reset_index('time_in_seconds').groupby('track_id')['time_in_seconds'].max()
     print(f"Removing {(track_lens < thr_in_min).sum()} tracks shorter than {thr_in_min} timepoints.")
-    timer.log('groupby')
     
     tracks_nice = track_lens[
         (track_lens >= thr_in_min) 
@@ -338,7 +329,5 @@ def _remove_short_tracks(data, valid_pulses, thr_in_min=parameters.TRACK_LENGTH_
 
     if len(tracks_nice) < len(data.index.get_level_values('track_id').unique()):
         data = data.loc[tracks_nice]
-    timer.log('allocation')
-    timer.report()
     return data
 
