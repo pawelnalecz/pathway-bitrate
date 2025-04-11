@@ -27,6 +27,9 @@ snakemake --snakefile workflows/fig2A.smk --cores all
 ```
 * The results will appear in the figures/panels subdirectory of your output folder.
 
+### Other workflows
+The `workflow` directory contains other snakefiles (not starting with fig)
+
 # Reusing the scripts for own research
 The following workflow was used in our paper:
 * Protocol generation
@@ -70,3 +73,4 @@ If you decide to use ShuttleTracker, you can use the following procedure:
   * TEST (evaluation on test set and bitrate estimation)
   Parameters for each step are defined separately. In `config/configs.py`, you can predefine sets of parameter values for each step. You can choose which sets to use by including their name in the `<STEP_NAME>_CONFIGS` lists, either in `workflows/_defaults.py` or in the separate workflow files for each figure.
 * Run the `mi_defaults.smk` to obtain bitrate estimation.
+* For running other scripts, you may need to adjust figure layouts in `workflows/_combine_plots.smk`, `src/fig_layout.py` and in the concerned workflow. You may also want to edit the set types defined in `DataManager.set_type_to_well_ids()` (`src/data_manager.py`).
