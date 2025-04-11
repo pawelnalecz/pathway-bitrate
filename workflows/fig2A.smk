@@ -12,6 +12,7 @@ from generic._defaults import (
 
 from src import fig_style
 from src.fig_layout import row_to_pos, val_name_pos_list
+from config.local_config import OUTPUT_PATH
 
 matplotlib.use("agg")
 workdir: OUTPUT_PATH

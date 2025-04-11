@@ -30,7 +30,7 @@ snakemake --snakefile workflows/fig2A.smk --cores all
 ### Other workflows
 The `workflow` directory contains other snakefiles (not starting with fig)
 
-# Reusing the scripts for own research
+# Reusing the scripts for own research (advanced)
 The following workflow was used in our paper:
 * Protocol generation
 * Biological experiments
