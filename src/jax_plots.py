@@ -20,7 +20,7 @@ from src.jax_protocol import Protocol
 from src.fig_layout import row_to_pos, val_name_pos_list
 from src.internal_abbreviations import format_positive_inhibitors
 from src.jax_evaluation import cross_entropy_from_logit
-from src.parameters import RESPONSIVENESS_DELAY
+from config.parameters import RESPONSIVENESS_DELAY
 
 
 PE_COLOR = '#1E88E5'

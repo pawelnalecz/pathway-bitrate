@@ -5,7 +5,7 @@ sys.path.append(str(Path('.').resolve()))
 import pandas as pd
 import numpy as np
 
-from src.parameters import RESPONSIVENESS_DELAY
+from config.parameters import RESPONSIVENESS_DELAY
 from src.data_preprocessing import compute_translocation_ratio
 
 # AUXILIARY FUNCTIONS

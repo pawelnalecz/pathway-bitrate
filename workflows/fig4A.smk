@@ -10,7 +10,7 @@ from generic._defaults import (
 
 from src import jax_plots
 from src import fig_style
-from src.parameters import RESPONSIVENESS_DELAY
+from config.parameters import RESPONSIVENESS_DELAY
 from config.local_config import OUTPUT_PATH
 
 matplotlib.use("agg")

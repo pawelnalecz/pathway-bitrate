@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 from src.timer import Timer
-from src import parameters
+from config import parameters
 from src.stat_utils import normalize_with_mean_and_std
 from src.internal_abbreviations import has_exactly_inhibitors
 

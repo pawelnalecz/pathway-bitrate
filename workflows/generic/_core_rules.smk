@@ -10,7 +10,7 @@ from src import jax_protocol
 from src import jax_dataloader
 from src import jax_nn
 from src import jax_evaluation
-from src import parameters
+from config import parameters
 from src.stat_utils import get_sorted
 
 from config.configs import (

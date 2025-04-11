@@ -7,7 +7,7 @@ from PIL import Image
 from config.local_config import INPUT_TYPE
 from src.internal_abbreviations import format_positive_inhibitors, format_well_id
 from src import jax_protocol
-from src import parameters
+from config import parameters
 
 PREDEFINED_PROTOCOLS = '_predefined_protocols'
 

@@ -4,21 +4,29 @@ import sys
 sys.path.append(str(Path('.').resolve()))
 
 
-# CONFIGURATION
+## CONFIGURATION
 
-# IMPORTANT: '_' is a special character in the pipeline, do not use it in config names
-
+# '_' is a special character in the pipeline, do not use it in config names
 DATASET_CONFIGS = {
-    'raw': dict(extra_cols=[], add_log_l=False),
-    'ls+cell+inhs': dict(extra_cols=['X_ratio_std',
-        'X_cell_line',
-        'X_criz',
-        'X_tram',
-        'X_cycl',
-    ],),
-    'ls': dict(extra_cols=['X_ratio_std']),
-    'ls+cell': dict(extra_cols=['X_ratio_std', 'X_cell_line']),
-    'ls+conds': dict(extra_cols=[
+    'ls+cell+inhs': dict(
+        r_ts=[60, 120, 180, 240, 300, 360],
+        extra_cols=[
+            'X_ratio_std',
+            'X_cell_line',
+            'X_criz',
+            'X_tram',
+            'X_cycl',
+        ],
+    ),
+    
+    'raw': dict(
+        r_ts=[60, 120, 180, 240, 300, 360],
+        extra_cols=[], 
+        add_log_l=False,
+    ),
+    'ls': dict(r_ts=[60, 120, 180, 240, 300, 360], extra_cols=['X_ratio_std']),
+    'ls+cell': dict(r_ts=[60, 120, 180, 240, 300, 360], extra_cols=['X_ratio_std', 'X_cell_line']),
+    'ls+conds': dict(r_ts=[60, 120, 180, 240, 300, 360], extra_cols=[
        'X_ratio_std',
        'X_cond_STE1_0uM',
        'X_cond_STE1_03uM',
@@ -30,18 +38,19 @@ DATASET_CONFIGS = {
        'X_cond_BEAS2B_cycl',
        'X_cond_BEAS2B_trcy',
     ]),
-    'lr': dict(extra_cols=['X_responsiveness']),
-    'w5+ls': dict(rolling_min_window=5, extra_cols=['X_ratio_std']),
+    'lr': dict(r_ts=[60, 120, 180, 240, 300, 360], extra_cols=['X_responsiveness']),
+    'w5+ls': dict(r_ts=[60, 120, 180, 240, 300, 360], extra_cols=['X_ratio_std'], rolling_min_window=5),
 }
 
-print('init', DATASET_CONFIGS)
 
+# '_' is a special character in the pipeline, do not use it in config names
 MODEL_CONFIGS = {
     'nn': dict(hidden_layers=(40, 20), normalize=True),
 }
 
 
-# '+' is a special symbol in TRAIN_CONFIGS to mark sequential training with different configs; do not use it in config names
+# '_' is a special character in the pipeline, do not use it in config names
+# Adidionally, '+' is a special symbol in TRAIN_CONFIGS to mark sequential training with different configs; do not use it in config names
 TRAIN_CONFIGS = {
     'main-q0': dict(set_type='main', train_quality=0, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
     'main-q1': dict(set_type='main', train_quality=1, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
@@ -73,6 +82,7 @@ TRAIN_CONFIGS = {
     'opt-5-90protocol-L2-003-q1tr':  dict(set_type='main+cell+inh', train_quality='transmitting', transmitting_train_id='main-q0', transmitting_test_id='q1', train_steps=5_000, batch_size=10_000, optimize_network=False, optimize_protocol=True, protocol_id='5-90gamma4x5', protocol_d2_L2_penalty=.03),
 }
 
+# '_' is a special character in the pipeline, do not use it in config names
 TEST_CONFIGS = {
     'q-1': dict(test_quality=-1, protocol_id='long_experimental', reweight=False), 
     'q0': dict(test_quality=0, protocol_id='long_experimental', reweight=False), 

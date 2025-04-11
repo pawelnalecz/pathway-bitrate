@@ -5,7 +5,7 @@ import jax.numpy as jnp
 
 from src.jax_utils import jax_assert
 from src.jax_protocol import Protocol
-from src.parameters import KEEP_START, KEEP_END
+from config.parameters import KEEP_START, KEEP_END
 
 class DataLoader:
     def __init__(
