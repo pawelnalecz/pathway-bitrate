@@ -54,7 +54,6 @@ rule per_to_nuc_trajectory:
 
         mean_trajectories = pd.read_csv(str(input), index_col='time_in_seconds')['log_per_to_nuc_translocation']
 
-        print(mean_trajectories)
 
         xmin = 0
         xmax = 400 * 60
@@ -66,8 +65,6 @@ rule per_to_nuc_trajectory:
             alpha=.6, 
             label=wildcards.well_or_set_id,
             )
-        print(wildcards.well_or_set_id)
-        print(mean_trajectories)
             
         ax.xaxis.set_major_locator(MultipleLocator(1800))
         ax.xaxis.set_minor_locator(MultipleLocator(600))

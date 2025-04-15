@@ -148,7 +148,7 @@ class DataManager:
         experiment = self.get_experiment(well_id)
         assert 'path_perinucs' in self.wells, f"Cannot load tracks with perinucs for {well_id}: path_perinucs not defined in metadata.yaml"
         path_tracks_relative = self.wells.loc[well_id, 'path_perinucs']
-        assert not np.isnan(path_tracks_relative), f"Cannot load tracks with perinucs for {well_id}: path_perinucs not defined in metadata.yaml"
+        assert isinstance(path_tracks_relative, str), f"Cannot load tracks with perinucs for {well_id}: path_perinucs not defined in metadata.yaml"
         path_tracks = self.data_dir / experiment / path_tracks_relative
         return path_tracks
 
@@ -157,7 +157,7 @@ class DataManager:
         experiment = self.get_experiment(well_id)
         assert 'path_shuttletracker_config' in self.wells, f"Cannot load shuttletracker_metadata for {well_id}: path_shuttletracker_config not defined in metadata.yaml"
         path_shuttletracker_config_relative = self.wells.loc[well_id, 'path_shuttletracker_config']
-        assert not np.isnan(path_shuttletracker_config_relative), f"Cannot load shuttletracker_metadata for {well_id}: path_shuttletracker_config not defined in metadata.yaml"
+        assert isinstance(path_shuttletracker_config_relative, str), f"Cannot load shuttletracker_metadata for {well_id}: path_shuttletracker_config not defined in metadata.yaml"
         path_shuttletracker_config = self.data_dir / experiment / path_shuttletracker_config_relative
         path_shuttletracker_metadata = path_shuttletracker_config / 'shuttletracker_metadata.txt'
         return path_shuttletracker_metadata
@@ -166,7 +166,7 @@ class DataManager:
     def get_images_path(self, well_id):
         assert 'path_images' in self.wells, f"Cannot load images for {well_id}: path_images not defined in metadata.yaml"
         path_images_relative = self.wells.loc[well_id, 'path_images']
-        assert not np.isnan(path_images_relative), f"Cannot load images for {well_id}: path_images not defined in metadata.yaml"
+        assert isinstance(path_images_relative, str), f"Cannot load images for {well_id}: path_images not defined in metadata.yaml"
         path_images = self.image_root_dir / path_images_relative
         return path_images
     

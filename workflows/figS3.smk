@@ -58,8 +58,6 @@ rule fig_S3:
             keys=WELLS_SELECTED.index,
         )
 
-        print(mean_trajectories)
-
         xmin = 0
         xmax = 400 * 60
 

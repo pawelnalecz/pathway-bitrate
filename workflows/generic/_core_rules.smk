@@ -64,8 +64,6 @@ def load_dataset(well_id, quality, transmitting_test_id=None, tracks_mi_path=Non
     tracks_info = pd.read_csv(tracks_info_path, index_col='track_id')
     tracks_mi = pd.read_csv(tracks_mi_path, index_col='track_id') if quality == 'transmitting' else None
     
-    print(dataset_config)
-
     return create_dataset.create_dataset(
         tracks,
         tracks_info,
@@ -373,8 +371,6 @@ rule predictions:
         transmitting_test_id = test_config['transmitting_test_id'] if quality == 'transmitting' else None
         tracks_mi_path = input.tracks_mi if quality == 'transmitting' else None
 
-        print(DATASET_CONFIGS)
-        print(DATASET_CONFIGS[wildcards.dataset_id])
         dataset = load_dataset(
             wildcards.well_id,
             quality=quality,
