@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 
-from config.local_config import INPUT_TYPE
+from config import local_config
 from src.internal_abbreviations import format_positive_inhibitors, format_well_id
 from src import jax_protocol
 from config import parameters
@@ -16,59 +16,20 @@ class DataManager:
         self.data_dir = Path(data_dir).resolve()
         self.verbose = verbose
         self._load_metadata()
-
-    def get_image(self, well_id, time_in_seconds, channel_name):
-        experiment = self.get_experiment(well_id)
-        seconds_per_timepoint = self.get_seconds_per_timepoint(experiment)
-        time_point_index = time_in_seconds // seconds_per_timepoint
-        
-        path_images_relative = self.wells.loc[well_id, 'path_images']
-        path_images = self.data_dir / experiment / path_images_relative
-        path_stt_metadata = path_images / 'shuttletracker_metadata.txt'
-
-        channel_name_to_id = {metadata['name']: channel_id  for channel_id, metadata in _parse_shuttletracker_metadata(path_stt_metadata).items()}
-        path_img = path_images / f"Img_t{time_point_index:04d}_c{channel_name_to_id[channel_name]}.tif"
-        return _load_img(path_img)
-
-
-    def get_stt_tracks(self, well_id):
-        # find
-        experiment = self.get_experiment(well_id)
-        path_tracks_relative = self.wells.loc[well_id, 'path_tracks']
-        path_tracks = self.data_dir / experiment / '01-tracking-per' / path_tracks_relative.split('/')[-1].replace('.pkl.gz', '-stt.pkl.gz')
-
-        # load
-        if INPUT_TYPE == 'PICKLE':
-            tracks = pd.read_pickle(path_tracks)
-        elif INPUT_TYPE == 'CSV':
-            tracks = pd.read_csv(path_tracks, index_col=['track_id', 'time_in_seconds'])
-        else:
-            raise ValueError(f"INPUT_TYPE must be either 'PICKLE' or 'CSV, not {INPUT_TYPE}")
-
-        # annotate valid
-        valid_start = self.experiments.loc[experiment, 'valid_start']
-        valid_end = self.experiments.loc[experiment, 'valid_end']
-        tracks['valid'] = (
-            (tracks.index.get_level_values('time_in_seconds') >= valid_start)
-          & (tracks.index.get_level_values('time_in_seconds') <= valid_end)
-        )
-
-        return tracks
-
+    
 
     def get_tracks(self, well_id):
         # find
         experiment = self.get_experiment(well_id)
-        path_tracks_relative = self.wells.loc[well_id, 'path_tracks']
-        path_tracks = self.data_dir / experiment / path_tracks_relative
+        path_tracks = self.get_tracks_path
         
         # load
-        if INPUT_TYPE == 'PICKLE':
+        if local_config.INPUT_TYPE == 'PICKLE':
             tracks = pd.read_pickle(path_tracks)
-        elif INPUT_TYPE == 'CSV':
+        elif local_config.INPUT_TYPE == 'CSV':
             tracks = pd.read_csv(path_tracks, index_col=['track_id', 'time_in_seconds'])
         else:
-            raise ValueError(f"INPUT_TYPE must be either 'PICKLE' or 'CSV, not {INPUT_TYPE}")
+            raise ValueError(f"local_config.INPUT_TYPE must be either 'PICKLE' or 'CSV, not {local_config.INPUT_TYPE}")
 
         # annotate valid
         valid_start = self.experiments.loc[experiment, 'valid_start']
@@ -81,21 +42,32 @@ class DataManager:
         return tracks
 
 
-    def get_pulses(self, experiment):
-        return self.pulses.loc[experiment]
-
-
-    def get_experiment_info(self, experiment):
-        return self.experiments.loc[experiment]
-    
-
-    def get_shuttletracker_metadata(self, well_id):
+    def get_tracks_with_perinucs(self, well_id):
+        # find
         experiment = self.get_experiment(well_id)
-        
-        path_images_relative = self.wells.loc[well_id, 'path_images']
-        path_images = self.data_dir / experiment / path_images_relative
-        path_stt_metadata = path_images / 'shuttletracker_metadata.txt'
+        path_tracks = self.get_perinucs_path(well_id)
 
+        # load
+        if local_config.INPUT_TYPE == 'PICKLE':
+            tracks = pd.read_pickle(path_tracks)
+        elif local_config.INPUT_TYPE == 'CSV':
+            tracks = pd.read_csv(path_tracks, index_col=['track_id', 'time_in_seconds'])
+        else:
+            raise ValueError(f"local_config.INPUT_TYPE must be either 'PICKLE' or 'CSV, not {local_config.INPUT_TYPE}")
+
+        # annotate valid
+        valid_start = self.experiments.loc[experiment, 'valid_start']
+        valid_end = self.experiments.loc[experiment, 'valid_end']
+        tracks['valid'] = (
+            (tracks.index.get_level_values('time_in_seconds') >= valid_start)
+          & (tracks.index.get_level_values('time_in_seconds') <= valid_end)
+        )
+
+        return tracks
+
+
+    def get_shuttletracker_scales_offsets(self, well_id):
+        path_stt_metadata = self.get_shuttlettracker_metadata_path(well_id)
         channel_metadata = _parse_shuttletracker_metadata(path_stt_metadata)
         all_metadata = {}
         for metadata in channel_metadata.values():
@@ -106,6 +78,27 @@ class DataManager:
 
         return pd.Series(all_metadata, name=well_id, dtype='object')
 
+
+    def get_image(self, well_id, time_in_seconds, channel_name):
+        experiment = self.get_experiment(well_id)
+        seconds_per_timepoint = self.get_seconds_per_timepoint(experiment)
+        time_point_index = time_in_seconds // seconds_per_timepoint
+        
+        path_images = self.get_images_path(well_id)
+        path_stt_metadata = self.get_shuttlettracker_metadata_path(well_id)
+
+        channel_name_to_id = {metadata['name']: channel_id  for channel_id, metadata in _parse_shuttletracker_metadata(path_stt_metadata).items()}
+        path_img = path_images / f"Img_t{time_point_index:04d}_c{channel_name_to_id[channel_name]}.tif"
+        return _load_img(path_img)
+
+
+    def get_pulses(self, experiment):
+        return self.pulses.loc[experiment]
+
+
+    def get_experiment_info(self, experiment):
+        return self.experiments.loc[experiment]
+    
 
     def get_effective_time_range(self, experiment):
         pulses = self.pulses.loc[experiment]
@@ -142,6 +135,41 @@ class DataManager:
 
     def get_well_info(self, well_id):
         return self.wells.loc[well_id]
+
+
+    def get_tracks_path(self, well_id):
+        experiment = self.get_experiment(well_id)
+        path_tracks_relative = self.wells.loc[well_id, 'path_tracks']
+        path_tracks = self.data_dir / experiment / path_tracks_relative
+        return path_tracks
+    
+
+    def get_perinucs_path(self, well_id):
+        experiment = self.get_experiment(well_id)
+        assert 'path_perinucs' in self.wells, f"Cannot load tracks with perinucs for {well_id}: path_perinucs not defined in metadata.yaml"
+        path_tracks_relative = self.wells.loc[well_id, 'path_perinucs']
+        assert not np.isnan(path_tracks_relative), f"Cannot load tracks with perinucs for {well_id}: path_perinucs not defined in metadata.yaml"
+        path_tracks = self.data_dir / experiment / path_tracks_relative
+        return path_tracks
+
+
+    def get_shuttlettracker_metadata_path(self, well_id):
+        experiment = self.get_experiment(well_id)
+        assert 'path_shuttletracker_config' in self.wells, f"Cannot load shuttletracker_metadata for {well_id}: path_shuttletracker_config not defined in metadata.yaml"
+        path_shuttletracker_config_relative = self.wells.loc[well_id, 'path_shuttletracker_config']
+        assert not np.isnan(path_shuttletracker_config_relative), f"Cannot load shuttletracker_metadata for {well_id}: path_shuttletracker_config not defined in metadata.yaml"
+        path_shuttletracker_config = self.data_dir / experiment / path_shuttletracker_config_relative
+        path_shuttletracker_metadata = path_shuttletracker_config / 'shuttletracker_metadata.txt'
+        return path_shuttletracker_metadata
+
+
+    def get_images_path(self, well_id):
+        assert 'path_images' in self.wells, f"Cannot load images for {well_id}: path_images not defined in metadata.yaml"
+        path_images_relative = self.wells.loc[well_id, 'path_images']
+        assert not np.isnan(path_images_relative), f"Cannot load images for {well_id}: path_images not defined in metadata.yaml"
+        path_images = self.image_root_dir / path_images_relative
+        return path_images
+    
 
 
     def set_type_to_well_ids(self, well_id, set_type):
@@ -249,6 +277,10 @@ class DataManager:
                 protocol = jax_protocol.Protocol(path=protocol_file)
                 self.predefined_protocols.update({protocol.name: protocol})
 
+        self.image_root_dir = Path(local_config.IMAGES_PATH)
+        if not self.image_root_dir.is_absolute():
+            self.image_root_dir = self.data_dir / self.image_root_dir
+
         # parse data_dir and load metadata
         experiments = []
         pulses = []
@@ -256,7 +288,7 @@ class DataManager:
         inhibitors = set()
 
         for path_experiment in self.data_dir.iterdir():
-            if path_experiment.name.startswith('_'): 
+            if not path_experiment.is_dir() or path_experiment.name.startswith('_'): 
                 continue
             path_experiment_metadata = path_experiment / 'metadata.yaml'
             if not path_experiment_metadata.exists():
@@ -340,6 +372,9 @@ class DataManager:
         self.pulses = pulses
 
 
+        
+
+
 def _parse_shuttletracker_metadata(stt_metadata_path):
     channels = {}
     with open(stt_metadata_path) as stt_file:
@@ -356,6 +391,7 @@ def _parse_shuttletracker_metadata(stt_metadata_path):
                 })
     return channels
 
-
 def _load_img(path):
     return np.array(Image.open(path)).astype('int32')
+
+

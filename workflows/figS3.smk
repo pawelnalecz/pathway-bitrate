@@ -38,7 +38,7 @@ include: "generic/_per_to_nuc_translocation.smk"
 rule fig_S3:
     input:
         expand(
-            'cache/figS3/per_well/{well_id}/mean_per_to_nuc_trajectory.csv.gz',
+            'cache/per_to_nuc/per_well/{well_id}/mean_per_to_nuc_trajectory.csv.gz',
             well_id=WELLS_SELECTED.index,
         ),
     output:

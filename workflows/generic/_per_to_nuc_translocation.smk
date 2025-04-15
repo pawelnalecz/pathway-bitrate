@@ -19,7 +19,7 @@ rule mean_per_to_nuc_trajectory:
                 pd.concat([
                     DATA_MANAGER.get_well_info(well_id), 
                     DATA_MANAGER.get_experiment_info(DATA_MANAGER.get_experiment(well_id)),
-                    DATA_MANAGER.get_shuttletracker_metadata(well_id),
+                    DATA_MANAGER.get_shuttletracker_scales_offsets(well_id),
                     ]).to_frame(well_id)
                 for well_id in well_ids
             ],
@@ -27,12 +27,11 @@ rule mean_per_to_nuc_trajectory:
         ).T.infer_objects()
 
         well_info.index.name = 'well_id'
-        print(well_info)
         assert len(well_info['reporter_channel'].drop_duplicates()) == 1
         reporter_channel = well_info['reporter_channel'].iloc[0]
 
         tracks = pd.concat((
-                DATA_MANAGER.get_stt_tracks(well_id)
+                DATA_MANAGER.get_tracks_with_perinucs(well_id)
                 for well_id in well_ids),
             names=['well_id'],
             keys=well_ids,
