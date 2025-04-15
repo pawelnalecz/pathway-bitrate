@@ -21,7 +21,7 @@ class DataManager:
     def get_tracks(self, well_id):
         # find
         experiment = self.get_experiment(well_id)
-        path_tracks = self.get_tracks_path
+        path_tracks = self.get_tracks_path(well_id)
         
         # load
         if local_config.INPUT_TYPE == 'PICKLE':

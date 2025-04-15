@@ -57,8 +57,6 @@ def create_dataset(
     if add_log_l:
         log_ls = np.log(dataset['L'])
         dataset[f'X_log_l'] = log_ls
-    print(tracks_info.columns)
-    print(extra_cols, type(extra_cols))
     dataset = dataset.join(
         tracks_info[extra_cols],
         on='track_id',
