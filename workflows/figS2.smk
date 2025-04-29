@@ -44,7 +44,7 @@ rule fig_S2:
         experiment = DATA_MANAGER.get_experiment(well_id)
         pulses = DATA_MANAGER.get_pulses(experiment)['time_in_seconds']
 
-        fig, axs = subplots_from_axsize(axsize=(3, [1.6, 2.2, 1.6]), left=.8, top=0.4, right=.02, bottom=.8)
+        fig, axs = subplots_from_axsize(axsize=(3, [1.6, 2.2, 1.6]), left=.8, top=0.4, bottom=.8)
 
 
         track_id = 248 #94 # 3
