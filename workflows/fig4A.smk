@@ -49,7 +49,7 @@ rule fig_4A:
     resources:
         mem_gib=1
     run:
-        fig, ax = subplots_from_axsize(axsize=(2.4, 1.), facecolor=(1., .9, .9), top=.3)
+        fig, ax = subplots_from_axsize(axsize=(2.4, 1.), top=.3)
 
         for input_path, (set_id, color) in zip(input.response_over_reference, set_types_and_colors):
             response_over_reference = pd.read_csv(input_path, index_col='L')['response_amplitude']

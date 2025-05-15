@@ -62,9 +62,7 @@ rule fig_4D:
             axsize=(1.4, 3.0), 
             top=0.4, 
             left=.8,
-            facecolor=(.9, 1., .9),
             )
-        ax.set_facecolor((.9, 1., .9))
 
         mi_no_opt = mi_all[mi_all['train_id_1'].isna() & (mi_all['test_id'] == test_id)]
         mi_opt = mi_all[mi_all['train_id_1'].notna() & (mi_all['test_id'] == optimized_test_id)]

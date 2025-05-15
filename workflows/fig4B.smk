@@ -63,7 +63,7 @@ rule fig_4B:
     resources:
         mem_gib=1
     run:
-        fig, ax = subplots_from_axsize(axsize=(2.4,1.), facecolor=(.9, .9, 1.), top=.3)
+        fig, ax = subplots_from_axsize(axsize=(2.4,1.), top=.3)
 
         for set_id, color in set_types_and_colors:
             li_mean_p_network_logit = pd.read_csv(str(input[set_id]), index_col='L')
