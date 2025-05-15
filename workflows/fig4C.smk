@@ -63,7 +63,6 @@ rule fig_4C:
             ncols=1,
             left=.65,
             top=.3,
-            facecolor=(1., .95, .9),
         )
         xmin = 5
         xmax = 90
