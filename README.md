@@ -1,6 +1,9 @@
 # pathway-bitrate
 Python scripts to compute bitrate achieved by a biological signaling pathway. Used in Nalecz-Jawecki et al. 2025
 
+Created by Paweł Nałęcz-Jawecki and Frederic Grabowski at IPPT PAN, Warsaw, Poland.
+Available under BSD 3-Clause License.
+
 # Setup
 ### Prerequisites 
 * Python >= 3.10
