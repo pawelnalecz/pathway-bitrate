@@ -3,4 +3,4 @@ OUTPUT_PATH = '../generated'  # where the output should be stored
 
 IMAGES_PATH = '../Images'  # directory with microscope images
 
-INPUT_TYPE = 'PICKLE'         # 'PICKLE' or 'CSV'
+INPUT_TYPE = 'CSV'         # 'PICKLE' or 'CSV'
