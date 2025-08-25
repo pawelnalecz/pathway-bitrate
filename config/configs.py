@@ -18,7 +18,37 @@ DATASET_CONFIGS = {
             'X_cycl',
         ],
     ),
-    
+    'ls+cell+inhs--early': dict(
+        r_ts=[60, 120],
+        extra_cols=[
+            'X_ratio_std',
+            'X_cell_line',
+            'X_criz',
+            'X_tram',
+            'X_cycl',
+        ],
+    ),
+    'ls+cell+inhs--late': dict(
+        r_ts=[420, 480, 540, 600, 660, 720],
+        extra_cols=[
+            'X_ratio_std',
+            'X_cell_line',
+            'X_criz',
+            'X_tram',
+            'X_cycl',
+        ],
+    ),
+    'ls+cell+inhs--long': dict(
+        r_ts=[60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720],
+        extra_cols=[
+            'X_ratio_std',
+            'X_cell_line',
+            'X_criz',
+            'X_tram',
+            'X_cycl',
+        ],
+    ),
+        
     'raw': dict(
         r_ts=[60, 120, 180, 240, 300, 360],
         extra_cols=[], 
@@ -54,6 +84,9 @@ MODEL_CONFIGS = {
 TRAIN_CONFIGS = {
     'main-q0': dict(set_type='main', train_quality=0, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
     'main-q1': dict(set_type='main', train_quality=1, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
+    
+    'maincellinh-q0': dict(set_type='main+cell+inh', train_quality=0, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
+    'maincellinh-q1': dict(set_type='main+cell+inh', train_quality=1, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
     
     'main-self-q0': dict(set_type='main-self', train_quality=0, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),
     'main-self-q1': dict(set_type='main-self', train_quality=1, train_steps=10_000, batch_size=10_000, protocol_id='long_experimental'),

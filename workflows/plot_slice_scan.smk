@@ -15,9 +15,9 @@ from generic._defaults import (
     TEST_IDS,
 )
 
-from config.configs import (
-    DATASET_CONFIGS,
-)
+# from config.configs import (
+#     DATASET_CONFIGS,
+# )
 
 
 from config.local_config import OUTPUT_PATH
@@ -25,12 +25,19 @@ from config.local_config import OUTPUT_PATH
 matplotlib.use("agg")
 workdir: OUTPUT_PATH
 
+
+# INCLUDE CORE RULES
+
+include: "generic/_combine_plots.smk"
+include: "generic/_core_rules.smk"
+
+
 # CONFIGS
 
 
-SLICE_START_RANGE = range(-1, 4)
-SLICE_END_RANGE = range(0, 9)
-MAX_SLICE_LENGTH = 7
+SLICE_START_RANGE = [1] #range(-1, 4)
+SLICE_END_RANGE = range(1, 13)
+MAX_SLICE_LENGTH = 12
 
 SLICES = {
     f'r{slice_start}-r{slice_end}': {
@@ -42,17 +49,26 @@ SLICES = {
 }
 
 DATASET_CONFIGS = {
-    f'{dataset_id}-{slice_id}': slice_config | DATASET_CONFIGS[dataset_id]
+    f'{dataset_id}-{slice_id}': DATASET_CONFIGS[dataset_id] | slice_config
     for slice_id, slice_config in SLICES.items() 
-    for dataset_id in DATSET_IDS
+    for dataset_id in DATASET_IDS
 }
 
+DATASET_IDS_ORIGINAL = DATASET_IDS
 
-# INCLUDE CORE RULES
+DATASET_IDS = [
+    f'{dataset_id}-{slice_id}'
+    for slice_id in SLICES.keys() 
+    for dataset_id in DATASET_IDS
+]
 
-include: "generic/_combine_plots.smk"
-include: "generic/_core_rules.smk"
+print(DATASET_CONFIGS)
+print(DATASET_IDS)
 
+
+# INCLUDE JOINING (must go after DATASET_CONFIGS are redefined)
+
+include: "generic/_join_results.smk"
 
 # RULES
 
@@ -61,7 +77,7 @@ rule all:
         expand(
             'plot_slice_scan/combined/per_experiment/{experiment}/slice-scan_{dataset_id}_{model_id}_{train_id}_{test_id}.png',
             experiment=WELLS_SELECTED['experiment'].unique(),
-            dataset_id=DATASET_IDS,
+            dataset_id=DATASET_IDS_ORIGINAL,
             model_id=MODEL_IDS,
             train_id=TRAIN_IDS,
             test_id=TEST_IDS,
@@ -79,7 +95,7 @@ rule plot_slice_scan:
 
         mi_all = pd.read_csv(str(input))
 
-        expr = re.compile(r"r\-?[0-9]+\-r\-?[0-9]+\-(.+)")
+        expr = re.compile(r"(.+)-r\-?[0-9]+\-r\-?[0-9]+")
         
         train_ids = wildcards.train_id.split('+')
         max_train_ids = len([col for col in mi_all.columns if col.startswith('train_id_')])

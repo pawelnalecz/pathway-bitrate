@@ -44,5 +44,5 @@ SET_TYPES = [
 
 DATASET_IDS = ['ls+cell+inhs']#, 'ls+cell+inhs-q1']
 MODEL_IDS = ['nn']
-TRAIN_IDS = ['main-q0']
+TRAIN_IDS = ['maincellinh-q0']#['main-q0']
 TEST_IDS = ['q1']
