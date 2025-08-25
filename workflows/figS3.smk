@@ -61,7 +61,7 @@ rule fig_S3:
         xmin = 0
         xmax = 400 * 60
 
-        fig, ax = subplots_from_axsize(axsize=(6,2.2), left=.7)
+        fig, ax = subplots_from_axsize(axsize=(6,1.7), left=.7)
         conditions = []
         for well_id in mean_trajectories:
             label = f"{WELLS_SELECTED.loc[well_id]['inh_crizotinib']}uM" 

@@ -63,7 +63,7 @@ rule fig_S8:
             # axsize=(6, 1.3),
             ncols=1,
             left=.65,
-            top=.3,
+            top=.01,
             # facecolor=(1., .95, .9),
         )
         xmin = 5

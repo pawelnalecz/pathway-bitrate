@@ -40,15 +40,9 @@ rule fig_S7:
         xlim = (-2, 60 + 2)
         ylim = (-2, 35 + 2)
 
-        scale = 15
-        fig, ax = subplots_from_axsize(
-            axsize=(
-                (xlim[1] - xlim[0]) / scale,
-                (ylim[1] - ylim[0]) / scale
-            )
-        )
+        fig, ax = subplots_from_axsize(axsize=(2.5,2.))
 
-        ax.plot(ls / 60, l_embeds / 60, '-ok', markersize=5)
+        ax.plot(ls / 60, l_embeds / 60, '-ok', markersize=3)
         ax.annotate('$interval_k = 60$ min', (0.5, 0.9), xycoords='axes fraction', va='center', ha='center')
         ax.set_xlabel('$last_k$ [min]')
         ax.set_ylabel('$last_k^*$ [min]')
