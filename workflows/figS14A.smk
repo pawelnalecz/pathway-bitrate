@@ -24,6 +24,11 @@ workdir: OUTPUT_PATH
 
 # CONFIGS
 
+dataset_id = DATASET_IDS[0]
+model_id = MODEL_IDS[0]
+train_id = TRAIN_IDS[0]
+test_id = TEST_IDS[0]
+
 set_types_and_colors = [
     ('main+STE1+0uM',        'slategray'),
     ('main+STE1+criz03uM',   'deepskyblue'),
@@ -96,6 +101,19 @@ rule fig_S14A:
                 edgecolor='none',
                 alpha=tracks_mi_with_confluence['slots'] / 10000,
             )
+
+            tracks_mi_with_confluence_per_well = tracks_mi_with_confluence.groupby('well_id')[['confluence', 'mi_cross_per_slot']].mean()
+
+            ax.scatter(
+                tracks_mi_with_confluence_per_well['confluence'],
+                tracks_mi_with_confluence_per_well['mi_cross_per_slot'] * bph,
+                s=10, #tracks_mi_and_info['slots'] / 100,
+                color='red',
+                edgecolor='none',
+            )
+
+            ax.annotate(f"per_welll corr: {tracks_mi_with_confluence_per_well.corr().loc['confluence', 'mi_cross_per_slot']}:.2f    ", (0.3, 0.1), xycoords='axes fraction')
+
             corr = tracks_mi_with_confluence[['confluence', 'mi_cross_per_slot']].corr().loc['confluence', 'mi_cross_per_slot']
             ax.annotate(f"corr = {corr:.2f}", (0.3,.6), xycoords='axes fraction')
 

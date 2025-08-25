@@ -104,7 +104,7 @@ rule fig_S13A:
             ax.set_xlabel('')
 
             
-        fig.supxlabel('slice end [min after pusle]')
+        fig.supxlabel('slice end [min after pulse]')
         fig.supylabel('bitrate [bit/h]')
 
 

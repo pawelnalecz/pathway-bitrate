@@ -79,7 +79,7 @@ rule fig_S12A:
         
                     
         fig.supylabel('fraction of responding cells')
-        fig.supxlabel('neighbor No')
+        fig.supxlabel('$k$th nearest neighbor')
 
         fig.savefig(str(output.svg))
         fig.savefig(str(output.png), dpi=300)
