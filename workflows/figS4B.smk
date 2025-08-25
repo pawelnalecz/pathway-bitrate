@@ -19,6 +19,8 @@ workdir: OUTPUT_PATH
 
 # CONFIGS
 
+delay = 2
+
 set_types_and_colors = [
     # ('main+STE1+0uM', 'slategray'),
     ('main+STE1+criz', 'deepskyblue'),
@@ -40,7 +42,7 @@ include: "generic/_measures.smk"
 rule fig_S4B:
     input:
         response_over_reference=expand(
-            f'cache/response_amplitude/single/per_set/{{set_id}}/response-over-reference_q1_2.csv',
+            f'cache/response_amplitude/single/per_set/{{set_id}}/response-over-reference_q1_{delay}.csv',
             set_id=[set_id for set_id, _ in set_types_and_colors]
         )
     output:
@@ -49,17 +51,26 @@ rule fig_S4B:
     resources:
         mem_gib=1
     run:
-        fig, ax = subplots_from_axsize(axsize=(2.9, 1.8), top=.3, left=.7)
+        fig, ax = subplots_from_axsize(axsize=(2., 1.), top=.3, left=.7)
 
         for input_path, (set_id, color) in zip(input.response_over_reference, set_types_and_colors):
             response_over_reference = pd.read_csv(input_path, index_col='L')['response_amplitude']
-            jax_plots.plot_log_response_over_reference_by_interval(ax, response_over_reference, color=color, marker='o', ms=2, label=set_to_label[set_id].replace('\n', ' + ').replace(' + no inh', ''))
+            jax_plots.plot_log_response_over_reference_by_interval(ax, response_over_reference, color=color, marker='o', ms=2, 
+                                                                   label=set_to_label[set_id]#.replace('\n', ' + ').replace(' + no inh', ''),
+                                                                   )
         
         ax.set_xlim(-.5, 35.5)
         ax.set_ylim(-.2, 0.4)
         ax.set_xlabel('interval between pulses [min]')
+        ax.set_title(f'{delay} min after pulse')
         ax.spines[['top', 'right']].set_visible(False)
         ax.legend(loc='upper left')
+
+
+        fig.savefig(str(output.svg).replace('.svg', '--with_legend.svg'))
+        fig.savefig(str(output.png).replace('.png', '--with_legend.png'), dpi=300)
+
+        ax.get_legend().set_visible(False)
 
         fig.savefig(str(output.svg))
         fig.savefig(str(output.png), dpi=300)

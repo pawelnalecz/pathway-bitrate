@@ -22,7 +22,7 @@ workdir: OUTPUT_PATH
 # CONFIGS
 
 set_types_and_colors = [
-    # ('main+STE1+0uM', 'slategray'),
+    ('main+STE1+0uM', 'slategray'),
     # ('main+STE1+criz03uM', 'skyblue'),
     # ('main+STE1+criz1uM', 'deepskyblue'),
     # ('main+STE1+criz3uM', 'dodgerblue'),
@@ -65,7 +65,7 @@ rule fig_S4A:
         # xmin = 50
         # xmax = 250 * 60
 
-        fig, ax = subplots_from_axsize(axsize=(2.2,1.8), left=.7, top=.3)
+        fig, ax = subplots_from_axsize(axsize=(.8, 1.), left=.7, top=.3)
         conditions = []
         for mean_trajectory_path, (set_id, color) in zip(input.mean_trajectories, set_types_and_colors):
             mean_trajectory = pd.read_csv(mean_trajectory_path, index_col='time_in_seconds')
