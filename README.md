@@ -26,7 +26,7 @@ pip install -r requirements.txt
 * Open `config/local_config.py` with a text editor and enter the path to the downloaded data and the output directory.
 * Run the Snakemake workflow to generate a particular panel, e.g.,
 ```bash
-snakemake --snakefile workflows/fig2A.smk --cores all
+snakemake --snakefile workflows/fig2A.smk --cores all --resources mem-gib=32 --rerun-incomplete
 ```
 * The results will appear in the figures/panels subdirectory of your output folder.
 
