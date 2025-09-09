@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 import matplotlib
-from matplotlib import ticker
+from matplotlib.ticker import MultipleLocator
 from subplots_from_axsize import subplots_from_axsize
 
 from generic._defaults import (
@@ -20,24 +20,26 @@ workdir: OUTPUT_PATH
 
 # CONFIGS
 
-dataset_id = 'ls+cell+inhs'
+base_dataset_id = 'ls+cell+inhs'
 model_id = 'nn'
-train_id = 'maincellinh-q0'
+train_id = 'main-q0'
 test_id = 'q1'
 
 
 DATASET_SUFFIXES = ['', '--early', '--late', '--long']
-DATASET_IDS =  [dataset_id + suffix for suffix in DATASET_SUFFIXES]# ['ls+cell+inhs', 'ls+cell+inhs--early', 'ls+cell+inhs--late', 'ls+cell+inhs--long']
+DATASET_IDS =  [base_dataset_id + suffix for suffix in DATASET_SUFFIXES]# ['ls+cell+inhs', 'ls+cell+inhs--early', 'ls+cell+inhs--late', 'ls+cell+inhs--long']
 MODEL_IDS = [model_id]
 TRAIN_IDS = [train_id]
 TEST_IDS = [test_id]
 
 set_types_and_colors = [
-    ('main+STE1+0uM',        'slategray'),
-    ('main+STE1+criz03uM',   'deepskyblue'),
+    # ('main+STE1+0uM',        'slategray'),
+    ('main+STE1+criz03uM',   'skyblue'),
+    # ('main+STE1+criz1uM',   'deepskyblue'),
+    # ('main+STE1+criz3uM',   'dodgerblue'),
     ('main+BEAS2B+0uM',      'goldenrod'),
-    ('main+BEAS2B+cycl1uM',     'gold'),
-    ('main+BEAS2B+tram05uM',     'red'),
+    # ('main+BEAS2B+cycl1uM',     'gold'),
+    # ('main+BEAS2B+tram05uM',     'red'),
     # # ('main+BEAS2B+criz03uM', 'sandybrown'),
     # # ('main+BEAS2B+tram05uMcycl1uM', 'navajowhite'),
 ]
@@ -51,7 +53,7 @@ include: "generic/_combine_plots.smk"
 
 # RULES
 
-rule fig_S10A:
+rule fig_32:
     input:
         **{
             f"{set_id}_tracks_info": f'cache/preprocessed/per_set/{set_id}/tracks_info.csv.gz'
@@ -62,23 +64,36 @@ rule fig_S10A:
             for set_id, _ in set_types_and_colors for dataset_id in DATASET_IDS
         },
     output:
-        svg='figures/panels/figS10A.svg',
-        png='figures/panels/figS10A.png',
+        svg='figures/panels/fig32.svg',
+        png='figures/panels/fig32.png',
     run:
 
+        nrows = 1
         fig, axs = subplots_from_axsize(
-            # axsize=(.9, .9),
-            axsize=(3.05, 3.05),
-            # wspace=[.1, .4, .1, .1],
+            axsize=(2.05, 2.05),
+            wspace=.7,
             hspace=.7,
-            ncols=len(set_types_and_colors),
+            nrows=nrows,
+            ncols=(len(set_types_and_colors) - 1) // nrows + 1,
             bottom=.5,
-            nrows=1,
             top=.5,
-            left=1.,
+            left=.6,
+            right=.6,
             sharex=True,
             sharey=True,
         )
+
+        xsuffix = '--early'
+        ysuffix = '--late'
+
+        colx = 'mi_cross_per_slot' + xsuffix
+        coly = 'mi_cross_per_slot' + ysuffix
+
+        xlabel = 'bitrate – detection by dip [bit/h]'
+        ylabel = 'bitrate – detection by peak [bit/h]'
+
+        colors = pd.Series(['red', 'green'], index=[False, True])
+
 
         for ax, (set_id, color) in zip(axs.flatten(), set_types_and_colors):
             well_ids = SET_ID_TO_WELL_IDS[set_id] 
@@ -89,21 +104,16 @@ rule fig_S10A:
 
               
             tracks_mi = pd.concat(
-                    (pd.read_csv(input[f'{set_id}_{dataset_id}_tracks_mi'], index_col=index_col).add_suffix(dataset_suffix) for dataset_suffix, dataset_id in zip(DATASET_SUFFIXES, DATASET_IDS)),
-                    axis='columns',
-                )
+                (
+                    pd.read_csv(input[f'{set_id}_{dataset_id}_tracks_mi'], index_col=index_col)
+                        .add_suffix(dataset_suffix)
+                    for dataset_suffix, dataset_id in zip(DATASET_SUFFIXES, DATASET_IDS)
+                ),
+                axis='columns',
+            )
             tracks_info = pd.read_csv(input[f'{set_id}_tracks_info'], index_col=index_col)
             tracks_mi_and_info = tracks_mi.join(tracks_info)
 
-            xsuffix = '--early'
-            ysuffix = '--late'
-
-            colx = 'mi_cross_per_slot' + xsuffix
-            coly = 'mi_cross_per_slot' + ysuffix
-            xlabel = 'bitrate 1-2 min (dip) [bit/h]'
-            ylabel = 'bitrate 7-12 min (peak) [bit/h]'
-
-            colors = pd.Series(['red', 'green'], index=[False, True])
 
             ax.scatter(
                 tracks_mi_and_info[colx] * bph,
@@ -117,45 +127,47 @@ rule fig_S10A:
             corr = tracks_mi_and_info.corr()
 
             fractions_transmitting = tracks_mi_and_info.groupby(['is_transmitting' + xsuffix, 'is_transmitting' + ysuffix])['slots'].sum() / tracks_mi_and_info['slots'].sum()
-            ax.annotate(
-                f"{fractions_transmitting.loc[False, True ]: 10.1%}" 
-                f"{fractions_transmitting.loc[True , True ]: 10.1%}" "\n"
-                f"{fractions_transmitting.loc[False, False]: 10.1%}" 
-                f"{fractions_transmitting.loc[True , False]: 10.1%}" "\n\n"
-                f"corr (bitrates) = {corr['mi_cross_per_slot' + xsuffix]['mi_cross_per_slot' + ysuffix]:.2f}" "\n"
-                f"corr (transmitting) = {corr['is_transmitting' + xsuffix]['is_transmitting' + ysuffix]:.2f}" "\n"
-                , 
-             (0.55, 0.6), xycoords=('axes fraction'),
-             fontweight='bold',)
-            
+          
             transmitting_thresholds = pd.Series(
                 [
                     tracks_mi_and_info[tracks_mi_and_info['is_transmitting' + dataset_suffix]]['mi_cross_per_slot' + dataset_suffix].min() 
                     for dataset_suffix in DATASET_SUFFIXES
                 ], 
                 index=DATASET_SUFFIXES,
-                ) * bph
+            ) * bph
             
             ax.axvline(transmitting_thresholds[xsuffix], ls='--', color='k', alpha=.3)
             ax.axhline(transmitting_thresholds[ysuffix], ls='--', color='k', alpha=.3)
 
-            # ax.xaxis.set_major_locator(ticker.MultipleLocator(.5))
+            xmin, xmax = -5, 17
+            ax.set_xlim(xmin, xmax)
+            ax.set_ylim(xmin, xmax)
 
-            ax.set_xlim(-5, 17)
-            ax.set_ylim(-5, 17)
+            for valx, valy, posx, posy in [
+                (False, True , (xmin + transmitting_thresholds[xsuffix]) / 2, (xmax + transmitting_thresholds[ysuffix]) / 2),
+                (True , True , (xmax + transmitting_thresholds[xsuffix]) / 2, (xmax + transmitting_thresholds[ysuffix]) / 2),
+                (False, False, (xmin + transmitting_thresholds[xsuffix]) / 2, (xmin + transmitting_thresholds[ysuffix]) / 2),
+                (True , False, (xmax + transmitting_thresholds[xsuffix]) / 2, (xmin + transmitting_thresholds[ysuffix]) / 2),
+            ]:
+                ax.annotate(
+                    f"{fractions_transmitting.loc[valx, valy]: .1%}",
+                    (posx, posy), 
+                    # xycoords=('axes fraction'),
+                    fontweight='bold',
+                    fontsize='large',
+                    horizontalalignment='center',
+                    verticalalignment='center',
+                )
 
-            ax.set_title(set_to_label[set_id], fontsize='medium') #.replace('\n', ' + ')
 
-            # ax.set_xlabel(xlabel)
-            # ax.set_ylabel(ylabel)
+            ax.xaxis.set_major_locator(MultipleLocator(5))
+            ax.yaxis.set_major_locator(MultipleLocator(5))
+
+            ax.set_title(set_to_label[set_id].replace('\n', ' + '), fontsize='medium') #.replace('\n', ' + ')
 
         
-        # for ax in axs.flatten()[1:]:
-        #     ax.set_yticks([])
-        
-        fig.supylabel(ylabel, fontsize='large')
-        fig.supxlabel(xlabel, fontsize='large')
-
+        fig.supylabel(ylabel, fontsize='medium')
+        fig.supxlabel(xlabel, fontsize='medium')
 
         fig.savefig(str(output.svg))
         fig.savefig(str(output.png), dpi=300)

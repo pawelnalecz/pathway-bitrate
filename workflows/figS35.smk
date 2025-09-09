@@ -62,11 +62,17 @@ DATASET_IDS = [
 
 
 set_types_and_colors = [
-    ('main+STE1+0uM',        'slategray'),
-    ('main+STE1+criz03uM',   'deepskyblue'),
-    ('main+BEAS2B+0uM',      'goldenrod'),
-    ('main+BEAS2B+cycl1uM',     'gold'),
-    ('main+BEAS2B+tram05uM',     'red'),
+    # ('main+STE1+0uM',        'slategray'),
+    [
+        ('main+STE1+criz03uM',   'skyblue'),
+        ('main+STE1+criz1uM',   'deepskyblue'),
+        ('main+STE1+criz3uM',   'dodgerblue'),
+    ],
+    [
+        ('main+BEAS2B+0uM',      'goldenrod'),
+        ('main+BEAS2B+cycl1uM',     'gold'),
+        ('main+BEAS2B+tram05uM',     'red'),
+    ]
     # ('main+BEAS2B+criz03uM', 'sandybrown'),
     # ('main+BEAS2B+tram05uMcycl1uM', 'navajowhite'),
 ]
@@ -78,12 +84,12 @@ include: "generic/_join_results.smk"
 
 # RULES
 
-rule fig_S13A:
+rule fig_S35:
     input:
-        'figS13A/mi_all.csv'
+        'figS35A/mi_all.csv'
     output:
-        svg='figures/panels/figS13A.svg',
-        png='figures/panels/figS13A.png',
+        svg='figures/panels/figS35.svg',
+        png='figures/panels/figS35.png',
     run:
         mi_all = pd.read_csv(str(input))
 
@@ -93,19 +99,36 @@ rule fig_S13A:
         mi_all['slice_end']   = mi_all['r_ts'].apply(lambda x: json.loads(x)[-1] / 60)
 
 
-        fig, axs = subplots_from_axsize(ncols=len(set_types_and_colors), axsize=(2,2), sharex=True, sharey=True, bottom=.6, top=.6, left=1., right=1.)
+        nrows = 1
 
-        for ax, (set_id, color) in zip(axs, set_types_and_colors):
-            mi_set = mi_all[mi_all['well_id'].isin(SET_ID_TO_WELL_IDS[set_id])]
-            mi_set.set_index(['slice_end', 'well_id'])['mi_ce'].unstack('well_id').plot(lw=1, alpha=.3, color=color, ax=ax)
-            mi_set.groupby('slice_end')['mi_ce'].mean().plot(lw=2, color=color, ax=ax)
-            ax.get_legend().set_visible(False)
-            ax.set_title(set_to_label[set_id], fontsize='medium') #.replace('\n', ' + ')
+        fig, axs = subplots_from_axsize(
+            nrows=nrows,
+            ncols=(len(set_types_and_colors) - 1) // nrows + 1,
+            axsize=(2,2),
+            sharex=True,
+            sharey=True,
+            bottom=.6,
+            top=.6,
+            left=.7,
+            right=.7,
+            wspace=.4,
+        )
+
+        for ax, sets_colors in zip(axs.flatten(), set_types_and_colors):
+            for (set_id, color) in sets_colors:
+                mi_set = mi_all[mi_all['well_id'].isin(SET_ID_TO_WELL_IDS[set_id])]
+                # mi_set.set_index(['slice_end', 'well_id'])['mi_ce'].unstack('well_id').plot(lw=1, alpha=.3, color=color, ax=ax)
+                mi_set.groupby('slice_end')['mi_ce'].mean().plot(lw=2, color=color, ax=ax, label=set_to_label[set_id].split('\n')[1])
+                ax.legend(title=set_to_label[set_id].split('\n')[0], title_fontproperties={'weight': 'bold'})
+                # ax.get_legend().set_visible(False)
+                # ax.set_title(set_to_label[set_id], fontsize='medium') #.replace('\n', ' + ')
             ax.set_xlabel('')
-
-            
-        fig.supxlabel('slice end [min after pusle]')
-        fig.supylabel('bitrate [bit/h]')
+            ax.set_xlim(0,12)
+            ax.set_xticks([0,6,12])
+            ax.grid(axis='x', ls=':', color='k', alpha=.3, lw=1)
+        
+        fig.supxlabel('slice end $r$ [min after target time point]', fontsize='medium')
+        fig.supylabel('bitrate [bit/h]', fontsize='medium')
 
 
         fig.savefig(str(output.svg))
