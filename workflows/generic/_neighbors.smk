@@ -21,7 +21,6 @@ rule neighbors:
         well_id = wildcards.well_id
 
         tracks = DATA_MANAGER.get_tracks(well_id)
-        print(tracks.shape)
 
         K = 25
 
