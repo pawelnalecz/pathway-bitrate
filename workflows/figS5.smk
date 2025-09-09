@@ -39,12 +39,12 @@ include: "generic/_evaluate_network.smk"
 
 # RULES
 
-rule fig_S6:
+rule fig_S5:
     input:
         f'cache/network_evaluation/single/per_set/{set_id}/li-mean-p-network-logit_{dataset_id}_{model_id}_{train_id}_{test_id}.csv'
     output:
-        svg='figures/panels/figS6.svg',
-        png='figures/panels/figS6.png',
+        svg='figures/panels/figS5.svg',
+        png='figures/panels/figS5.png',
     run:
         fig, (ax, cbar_ax) = subplots_from_axsize(axsize=([2, .1], 2), wspace=.2, right=.6)
 
