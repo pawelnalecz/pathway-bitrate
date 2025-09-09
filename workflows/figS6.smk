@@ -24,10 +24,10 @@ workdir: OUTPUT_PATH
 # RULES
 
 
-rule fig_S7:
+rule fig_S6:
     output:
-        svg='figures/panels/figS7.svg',
-        png='figures/panels/figS7.png',
+        svg='figures/panels/figS6.svg',
+        png='figures/panels/figS6.png',
     run:
 
         available_intervals = 60 * jnp.arange(5, 35+1)
