@@ -44,15 +44,15 @@ include: "generic/_core_rules.smk"
 
 # RULES
 
-rule fig_S4A:
+rule fig_6A:
     input:
         mean_trajectories=expand(
             'cache/mean_trajectory/per_set/{set_id}/mean_trajectory_q1.csv.gz',
             set_id=set_ids,
         ),
     output:
-        svg='figures/panels/figS4A.svg',
-        png='figures/panels/figS4A.png',
+        svg='figures/panels/fig6A.svg',
+        png='figures/panels/fig6A.png',
     resources:
         mem_mib=512,
     run:

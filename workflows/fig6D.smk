@@ -51,15 +51,15 @@ include: "generic/_evaluate_network.smk"
 
 # RULES
 
-rule fig_4B:
+rule fig_4D:
     input:
         **{
             set_id: f'cache/network_evaluation/single/per_set/{set_id}/li-mean-p-network-logit_{dataset_id}_{model_id}_{train_id}_{test_id}.csv'
             for set_id, _ in set_types_and_colors
         },
     output:
-        svg='figures/panels/fig4B.svg',
-        png='figures/panels/fig4B.png',
+        svg='figures/panels/fig6D.svg',
+        png='figures/panels/fig6D.png',
     resources:
         mem_gib=1
     run:
