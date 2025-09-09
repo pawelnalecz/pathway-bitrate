@@ -22,6 +22,7 @@
 # File management scripts
 scripts
 
+
 # Local configuration
 # **/local_config.py
 
@@ -30,6 +31,10 @@ private/
 batch_quantification/
 image_quantification/
 tmp/
+
+# Linked figures folder
+figures
+
 
 # Editors
 .vscode/
