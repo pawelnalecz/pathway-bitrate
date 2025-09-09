@@ -1,9 +1,7 @@
-from matplotlib import pyplot as plt
 import matplotlib
 from matplotlib.ticker import MultipleLocator
 from subplots_from_axsize import subplots_from_axsize
 import pandas as pd
-import numpy as np
 
 from generic._defaults import (
     DATA_MANAGER,
@@ -35,15 +33,15 @@ include: "generic/_per_to_nuc_translocation.smk"
 
 # RULES
 
-rule fig_S3:
+rule fig_2D:
     input:
         expand(
             'cache/per_to_nuc/per_well/{well_id}/mean_per_to_nuc_trajectory.csv.gz',
             well_id=WELLS_SELECTED.index,
         ),
     output:
-        svg='figures/panels/figS3.svg',
-        png='figures/panels/figS3.png',
+        svg='figures/panels/fig2D.svg',
+        png='figures/panels/fig2D.png',
     resources:
         mem_gib=lambda wc, input: 2 * len(input),
     run:

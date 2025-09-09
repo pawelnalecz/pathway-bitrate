@@ -22,7 +22,7 @@ workdir: OUTPUT_PATH
 set_types_and_colors = [
     # ('main+STE1+0uM', 'slategray'),
     ('main+STE1+criz', 'deepskyblue'),
-    
+
     ('main+BEAS2B+0uM', 'goldenrod'),
     ('main+BEAS2B+cycl1uM', 'gold'),
     ('main+BEAS2B+tram05uM', 'red'),
@@ -44,8 +44,8 @@ rule fig_4A:
             set_id=[set_id for set_id, _ in set_types_and_colors]
         )
     output:
-        svg='figures/panels/fig4A.svg',
-        png='figures/panels/fig4A.png',
+        svg='figures/panels/fig6B.svg',
+        png='figures/panels/fig6B.png',
     resources:
         mem_gib=1
     run:
