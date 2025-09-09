@@ -48,15 +48,15 @@ include: "generic/_core_rules.smk"
 
 # RULES
 
-rule fig_S8:
+rule fig_S7:
     input:        
         expand(
             f'cache/train/main/{{optset_id}}/protocol_{dataset_id}_{model_id}_{train_id}.yaml',
             optset_id=[set_type for set_type, _, in set_types_and_colors]
         )
     output:
-        svg='figures/panels/figS8.svg',
-        png='figures/panels/figS8.png',
+        svg='figures/panels/figS7.svg',
+        png='figures/panels/figS7.png',
     run:
         fig, ax = subplots_from_axsize(
             axsize=(6, 1.8),
