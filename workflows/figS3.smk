@@ -31,12 +31,12 @@ include: "generic/_join_results.smk"
 
 # RULES
 
-rule fig_S5:
+rule fig_S3:
     input:
-        mi_all='figures/data/figS5/mi_all.csv'
+        mi_all='figures/data/figS3/mi_all.csv'
     output:
-        svg='figures/panels/figS5.svg',
-        png='figures/panels/figS5.png',
+        svg='figures/panels/figS3.svg',
+        png='figures/panels/figS3.png',
     resources:
         mem_gib=1
     run:
